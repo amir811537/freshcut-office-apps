@@ -3,6 +3,7 @@ import Mainlayout from "../Layouts/Mainlayout";
 import Home from "../Components/pages/Home";
 import TodaysCall from "../Components/pages/TodaysCall";
 import Attendance from "../Components/pages/Attendance";
+import UpdateIzza from "../Components/pages/UpdateIzza";
 
 
 const router = createBrowserRouter([
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path:"attendance",
         element: <Attendance></Attendance>
+      },
+      {
+        path:"update",
+        element: <UpdateIzza></UpdateIzza>
       }
     ],
   },
