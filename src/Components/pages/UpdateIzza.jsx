@@ -25,7 +25,7 @@ const UpdateIzza = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/izza");
+      const res = await axios.get("https://officeappsserverdie-topaz.vercel.app/izza");
       setUsers(res.data);
     } catch (err) {
       console.error("Error fetching data", err);
@@ -85,7 +85,7 @@ const UpdateIzza = () => {
     e.preventDefault();
     try {
       const { _id, originalDue, ...payload } = formData;
-      await axios.patch(`http://localhost:5000/izza/${_id}`, payload);
+      await axios.patch(`https://officeappsserverdie-topaz.vercel.app/izza/${_id}`, payload);
       alert("Updated successfully!");
       setShowModal(false);
       fetchUsers();
