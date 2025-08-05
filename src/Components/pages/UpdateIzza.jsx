@@ -16,7 +16,7 @@ const UpdateIzza = () => {
     todaySell: 0,
     payment: 0,
     due: 0,
-    originalDue: 0, // extra field to store DB due
+    originalDue: 0,
   });
 
   useEffect(() => {
@@ -35,42 +35,48 @@ const UpdateIzza = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // temp update form data
     const updatedForm = {
       ...formData,
       [name]: value,
     };
 
-    const qty = name === "boilerQtykg" ? parseFloat(value) || 0 : parseFloat(updatedForm.boilerQtykg) || 0;
-    const rate = name === "boilerRate" ? parseInt(value) || 0 : parseInt(updatedForm.boilerRate) || 0;
-    const payment = name === "payment" ? parseInt(value) || 0 : parseInt(updatedForm.payment) || 0;
+    const qty = parseFloat(updatedForm.boilerQtykg) || 0;
+    const rate = parseFloat(updatedForm.boilerRate) || 0;
+    const payment = parseFloat(updatedForm.payment) || 0;
 
     const todaySell = Math.round(qty * rate);
-    let newDue = formData.originalDue; // base is the DB's old due
+    let newDue = formData.originalDue;
 
-    if (payment < todaySell) {
-      const unpaid = todaySell - payment;
-      newDue = formData.originalDue + unpaid;
+    if (todaySell > 0 || payment > 0) {
+      if (todaySell > payment) {
+        newDue = formData.originalDue + (todaySell - payment);
+      } else if (payment > todaySell) {
+        newDue = formData.originalDue - (payment - todaySell);
+      } // if equal, due stays same
     }
 
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      todaySell: todaySell,
+      todaySell,
       due: newDue,
     }));
   };
 
   const handleEdit = (user) => {
     setFormData({
-      ...user,
-      boilerQtypes: user.boilerQtypes || "",
-      boilerQtykg: user.boilerQtykg || "",
-      boilerRate: user.boilerRate || "",
-      payment: user.payment || 0,
-      todaySell: user.todaySell || 0,
+      _id: user._id,
+      name: user.name,
+      date: "", // new entry
+      address: user.address,
+      phone: user.phone,
+      boilerQtypes: "",
+      boilerQtykg: "",
+      boilerRate: "",
+      todaySell: 0,
+      payment: 0,
       due: user.due || 0,
-      originalDue: user.due || 0, // store original due for logic
+      originalDue: user.due || 0,
     });
     setShowModal(true);
   };
@@ -113,142 +119,142 @@ const UpdateIzza = () => {
         ))}
       </div>
 
-     {showModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-xl w-full max-w-lg relative shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-center">ইজা আপডেট করুন</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">নাম</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-lg relative shadow-lg">
+            <h2 className="text-xl font-bold mb-4 text-center">ইজা আপডেট করুন</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">নাম</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+              </div>
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">তারিখ</label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">তারিখ</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+              </div>
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">ঠিকানা</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">ঠিকানা</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
 
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">ফোন নম্বর</label>
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">ফোন নম্বর</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">বয়লার সংখ্যা</label>
-            <input
-              type="number"
-              name="boilerQtypes"
-              value={formData.boilerQtypes}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
-            />
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-gray-700 font-medium mb-1">বয়লার সংখ্যা</label>
+                  <input
+                    type="number"
+                    name="boilerQtypes"
+                    value={formData.boilerQtypes}
+                    onChange={handleChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-medium mb-1">কেজি</label>
+                  <input
+                    type="number"
+                    name="boilerQtykg"
+                    value={formData.boilerQtykg}
+                    onChange={handleChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-medium mb-1">রেট</label>
+                  <input
+                    type="number"
+                    name="boilerRate"
+                    value={formData.boilerRate}
+                    onChange={handleChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">আজকের বিক্রি</label>
+                <input
+                  type="number"
+                  name="todaySell"
+                  value={formData.todaySell}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">আজকের জমা</label>
+                <input
+                  type="number"
+                  name="payment"
+                  value={formData.payment}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-medium mb-1">ইজা আছে</label>
+                <input
+                  type="number"
+                  name="due"
+                  value={formData.due}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded bg-gray-100"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                >
+                  সংরক্ষণ করুন
+                </button>
+              </div>
+            </form>
           </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">কেজি</label>
-            <input
-              type="number"
-              name="boilerQtykg"
-              value={formData.boilerQtykg}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">রেট</label>
-            <input
-              type="number"
-              name="boilerRate"
-              value={formData.boilerRate}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
-            />
-          </div>
         </div>
-
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">আজকের বিক্রি</label>
-          <input
-            type="number"
-            name="todaySell"
-            value={formData.todaySell}
-            readOnly
-            className="w-full border px-3 py-2 rounded bg-gray-100"
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">আজকের জমা</label>
-          <input
-            type="number"
-            name="payment"
-            value={formData.payment}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">ইজা আছে</label>
-          <input
-            type="number"
-            name="due"
-            value={formData.due}
-            readOnly
-            className="w-full border px-3 py-2 rounded bg-gray-100"
-          />
-        </div>
-
-        <div className="flex justify-end gap-3 pt-3">
-          <button
-            type="button"
-            onClick={() => setShowModal(false)}
-            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-          >
-            বাতিল
-          </button>
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            সংরক্ষণ করুন
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };
