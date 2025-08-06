@@ -7,7 +7,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/izza")
+      .get("https://officeappsserverdie-topaz.vercel.app/izza")
       .then((res) => setUsers(res.data))
       .catch((err) => console.error("Failed to fetch users:", err));
   }, []);
