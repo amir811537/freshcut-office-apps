@@ -20,7 +20,7 @@ const Navbar = () => {
   return (
     <nav className="bg-green-400 border-gray-200 py-2.5 dark:bg-gray-900 fixed top-0 w-full z-50">
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl px-4 mx-auto">
-        <NavLink to="/home" className="flex items-center">
+        <NavLink to="/" className="flex items-center">
           <img src="https://i.ibb.co.com/HT4zS4SM/logo-removebg-preview.png" className="h-6 mr-3 sm:h-9" alt="CMS logo" />
           <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
             Fresh Cut

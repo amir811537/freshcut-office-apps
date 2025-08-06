@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const UpdateIzza = () => {
   const [users, setUsers] = useState([]);
@@ -84,9 +85,17 @@ const UpdateIzza = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { _id, originalDue, ...payload } = formData;
+      const { _id, ...payload } = formData;
       await axios.patch(`https://officeappsserverdie-topaz.vercel.app/izza/${_id}`, payload);
-      alert("Updated successfully!");
+
+Swal.fire({
+  position: "top-end",
+  icon: "success",
+  title: "Your work has been saved",
+  showConfirmButton: false,
+  timer: 1500
+});
+
       setShowModal(false);
       fetchUsers();
     } catch (err) {
